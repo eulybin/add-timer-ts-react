@@ -1,7 +1,7 @@
 /* eslint-disable react-refresh/only-export-components */
-import { type ReactNode, createContext, useState } from 'react';
+import { type ReactNode, createContext, useReducer } from 'react';
 
-type Timer = {
+export type Timer = {
     name: string;
     duration: number;
 };
@@ -17,6 +17,48 @@ type TimersContextValue = TimersState & {
     stopTimers: () => void;
 };
 
+type AddTimerAction = {
+    type: 'ADD_TIMER';
+    payload: Timer;
+};
+
+type StartTimersAction = {
+    type: 'START_TIMERS';
+};
+
+type StopTimersAction = {
+    type: 'STOP_TIMERS';
+};
+
+type Action = AddTimerAction | StartTimersAction | StopTimersAction;
+
+const initialState: TimersState = {
+    isRunning: false,
+    timers: [],
+};
+
+const reducer = (state: TimersState, action: Action): TimersState => {
+    switch (action.type) {
+        case 'ADD_TIMER':
+            return {
+                ...state,
+                timers: [...state.timers, action.payload],
+            };
+        case 'START_TIMERS':
+            return {
+                ...state,
+                isRunning: true,
+            };
+        case 'STOP_TIMERS':
+            return {
+                ...state,
+                isRunning: false,
+            };
+        default:
+            return state;
+    }
+};
+
 export const TimersContext = createContext<TimersContextValue | null>(null);
 
 type TimersProviderProps = {
@@ -24,19 +66,17 @@ type TimersProviderProps = {
 };
 
 export const TimersProvider = ({ children }: TimersProviderProps) => {
-    const [timers, setTimers] = useState<Timer[]>([]);
-    const [isRunning, setIsRunning] = useState(false);
+    const [state, dispatch] = useReducer(reducer, initialState);
 
     const addTimer = (timerData: Timer) => {
-        setTimers((prevState) => [...prevState, timerData]);
+        dispatch({ type: 'ADD_TIMER', payload: timerData });
     };
 
-    const startTimers = () => setIsRunning(true);
-    const stopTimers = () => setIsRunning(false);
+    const startTimers = () => dispatch({ type: 'START_TIMERS' });
+    const stopTimers = () => dispatch({ type: 'STOP_TIMERS' });
 
     const value: TimersContextValue = {
-        timers,
-        isRunning,
+        ...state,
         addTimer,
         startTimers,
         stopTimers,
