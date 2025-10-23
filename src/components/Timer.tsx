@@ -1,5 +1,5 @@
 import Container from './UI/Container.tsx';
-import type { Timer as TimerProps } from '../store/timers-context.tsx';
+import type { Timer as TimerProps } from '../context/TimersContext.tsx';
 
 export default function Timer({ name, duration }: TimerProps) {
     return (
