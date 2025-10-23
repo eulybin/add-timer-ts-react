@@ -29,7 +29,7 @@ type Action =
     | { type: typeof ActionTypes.STOP_TIMERS };
 
 const initialState: TimersState = {
-    isRunning: false,
+    isRunning: true,
     timers: [],
 };
 
